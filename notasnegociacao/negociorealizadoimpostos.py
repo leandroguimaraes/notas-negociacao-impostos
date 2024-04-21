@@ -1,8 +1,6 @@
 from notasnegociacao.negociorealizado import NegocioRealizado
 from notasnegociacao.resumofinanceiro import ResumoFinanceiro
 from notasnegociacao.notanegociacao import NotaNegociacao
-from notasnegociacao.notanegociacaonegocioimpostos import NotaNegociacaoNegocioImpostos
-
 
 class NegocioRealizadoImpostos(NegocioRealizado):
     resumoFinanceiro: ResumoFinanceiro
@@ -11,7 +9,7 @@ class NegocioRealizadoImpostos(NegocioRealizado):
         self.resumoFinanceiro = ResumoFinanceiro()
 
     @staticmethod
-    def calcResumoFinanceiroNegocio(nota: NotaNegociacaoNegocioImpostos):
+    def calcResumoFinanceiroNegocio(nota: 'NotaNegociacaoNegocioImpostos'):
         valorOperacoes = nota.resumoNegocios.valorOperacoes
         for negocio in nota.negociosRealizados:
             perc = abs(negocio.valorOperacaoAjuste /
@@ -52,3 +50,6 @@ class NegocioRealizadoImpostos(NegocioRealizado):
             if hasattr(nota.resumoFinanceiro.custosOperacionais, 'irrfSOperacoes'):
                 negocio.resumoFinanceiro.custosOperacionais.irrfSOperacoes = nota.resumoFinanceiro.custosOperacionais.irrfSOperacoes * perc
                 negocio.resumoFinanceiro.custosOperacionais.totalCustosDespesas += negocio.resumoFinanceiro.custosOperacionais.irrfSOperacoes
+
+class NotaNegociacaoNegocioImpostos(NotaNegociacao):
+    negociosRealizados: list[NegocioRealizadoImpostos]
