@@ -1,0 +1,7 @@
+{
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8"
+  },
+  "python.defaultInterpreterPath": "/usr/local/bin/python3",
+  "python.formatting.provider": "none"
+}
