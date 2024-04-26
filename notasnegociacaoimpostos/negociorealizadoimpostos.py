@@ -16,6 +16,7 @@ class NegocioRealizadoImpostos(NegocioRealizado):
             perc = abs(negocio.valorOperacaoAjuste /
                        valorOperacoes)
 
+            negocio.resumoFinanceiro = ResumoFinanceiro()
             negocio.resumoFinanceiro.clearing.taxaLiquidacao = nota.resumoFinanceiro.clearing.taxaLiquidacao * perc
             negocio.resumoFinanceiro.clearing.taxaRegistro = nota.resumoFinanceiro.clearing.taxaRegistro * perc
             negocio.resumoFinanceiro.clearing.totalCBLC = \
