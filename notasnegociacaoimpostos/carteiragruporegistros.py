@@ -1,5 +1,5 @@
-from carteiraregistro import CarteiraRegistro
-from negociorealizadoimpostos import NegocioRealizadoImpostos, NotaNegociacaoNegocioImpostos
+from notasnegociacaoimpostos.carteiraregistro import CarteiraRegistro
+from notasnegociacaoimpostos.negociorealizadoimpostos import NegocioRealizadoImpostos, NotaNegociacaoNegocioImpostos
 import datetime
 import copy
 
@@ -173,7 +173,8 @@ class CarteiraGrupoRegistros:
         if len(result) == 5:
             result = result[:-1]
         elif len(result) > 5:
-            raise ValueError(f'Especificação de opção não esperada: {especificacaoOpcao}')
+            raise ValueError(f'Especificação de opção não esperada: {
+                             especificacaoOpcao}')
 
         return ' '.join(result)
 
@@ -198,7 +199,7 @@ class CarteiraGrupoRegistros:
 
         # o 15o é o mais baixo terceiro dia do mês
         terceiro = datetime.date(int(data.strftime('%Y')),
-                                int(data.strftime('%m')), 15)
+                                 int(data.strftime('%m')), 15)
         # qual dia da semana é o 15o?
         w = terceiro.weekday()
 
