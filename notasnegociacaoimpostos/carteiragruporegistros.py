@@ -1,5 +1,6 @@
 from notasnegociacaoimpostos.carteiraregistro import CarteiraRegistro
 from notasnegociacaoimpostos.negociorealizadoimpostos import NegocioRealizadoImpostos, NotaNegociacaoNegocioImpostos
+from notasnegociacaoimpostos.util import Util
 import datetime
 import copy
 
@@ -20,11 +21,11 @@ class CarteiraGrupoRegistros:
         for nota in notasNegociacao:
             carteira = CarteiraGrupoRegistros.__atualizarPosicoesOpcoes(
                 carteira, nota.dataPregao)
-            grupo = next((grupo for grupo in carteira if CarteiraGrupoRegistros.__strToDate(grupo.data) ==
-                          CarteiraGrupoRegistros.__strToDate(nota.dataPregao)), CarteiraGrupoRegistros())
+            grupo = next((grupo for grupo in carteira if Util.strToDate(grupo.data) ==
+                          Util.strToDate(nota.dataPregao)), CarteiraGrupoRegistros())
 
             if (not hasattr(grupo, 'data')):
-                grupo.data = CarteiraGrupoRegistros.__strToDate(
+                grupo.data = Util.strToDate(
                     nota.dataPregao)
 
                 if (len(carteira) > 0):
@@ -41,7 +42,7 @@ class CarteiraGrupoRegistros:
 
                 carteira.append(grupo)
 
-            grupoData = CarteiraGrupoRegistros.__strToDate(grupo.data)
+            grupoData = Util.strToDate(grupo.data)
             grupo.registros = [r for r in grupo.registros if (not hasattr(
                 r, 'prazo')) or (hasattr(r, 'prazo') and r.prazo >= grupoData)]
 
@@ -97,7 +98,7 @@ class CarteiraGrupoRegistros:
 
     @staticmethod
     def __atualizarPosicoesOpcoes(carteira: list['CarteiraGrupoRegistros'], dataRef: datetime.date) -> list['CarteiraGrupoRegistros']:
-        dataRef = CarteiraGrupoRegistros.__strToDate(dataRef)
+        dataRef = Util.strToDate(dataRef)
 
         if (len(carteira) > 0):
             hasOpcoesVencidasCheck = False
@@ -113,8 +114,7 @@ class CarteiraGrupoRegistros:
                     if CarteiraGrupoRegistros.__hasOpcoesVencidas(registro, dataRef):
                         if hasattr(registro, 'prazo'):
                             # opções vencidas
-                            vencidaEm = CarteiraGrupoRegistros.__strToDate(
-                                registro.prazo)
+                            vencidaEm = Util.strToDate(registro.prazo)
                         else:
                             # opções exercidas
                             vencidaEm = dataRef
@@ -124,7 +124,7 @@ class CarteiraGrupoRegistros:
 
                         registro.qnt = 0
 
-                grupo.data = CarteiraGrupoRegistros.__strToDate(vencidaEm)
+                grupo.data = Util.strToDate(vencidaEm)
                 if carteira[-1].data != grupo.data:
                     carteira.append(grupo)
                 else:
@@ -230,10 +230,3 @@ class CarteiraGrupoRegistros:
     def __hasOpcoesVencidas(registro: CarteiraRegistro, dataRef: datetime.date) -> bool:
         return (registro.tipoMercado in ['EXERC OPC COMPRA', 'EXERC OPC VENDA']) \
             or (registro.tipoMercado in ['OPCAO DE COMPRA', 'OPCAO DE VENDA'] and registro.qnt != 0 and dataRef >= registro.prazo)
-
-    @staticmethod
-    def __strToDate(date) -> datetime.date:
-        if (type(date) is str):
-            date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
-
-        return date
