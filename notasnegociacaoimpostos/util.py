@@ -1,5 +1,6 @@
 import datetime
 
+
 class Util:
     @staticmethod
     def strToDate(date) -> datetime.date:
