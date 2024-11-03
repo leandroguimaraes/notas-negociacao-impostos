@@ -20,7 +20,7 @@ class CarteiraGrupoRegistros:
         carteira: list[CarteiraGrupoRegistros] = []
         for nota in notasNegociacao:
             carteira = CarteiraGrupoRegistros.__atualizarPosicoesOpcoes(
-                carteira, nota.dataPregao)
+                carteira, nota, notasNegociacao)
             grupo = next((grupo for grupo in carteira if Util.strToDate(grupo.data) ==
                           Util.strToDate(nota.dataPregao)), CarteiraGrupoRegistros())
 
@@ -97,13 +97,13 @@ class CarteiraGrupoRegistros:
         return carteira
 
     @staticmethod
-    def __atualizarPosicoesOpcoes(carteira: list['CarteiraGrupoRegistros'], dataRef: datetime.date) -> list['CarteiraGrupoRegistros']:
-        dataRef = Util.strToDate(dataRef)
+    def __atualizarPosicoesOpcoes(carteira: list['CarteiraGrupoRegistros'], notaAtual: NotaNegociacaoNegocioImpostos, notasNegociacao: list[NotaNegociacaoNegocioImpostos]) -> list['CarteiraGrupoRegistros']:
+        dataRef = Util.strToDate(notaAtual.dataPregao)
 
         if (len(carteira) > 0):
             hasOpcoesVencidasCheck = False
             for registro in carteira[-1].registros:
-                if CarteiraGrupoRegistros.__hasOpcoesVencidas(registro, dataRef):
+                if CarteiraGrupoRegistros.__hasOpcoesVencidas(registro, notaAtual, notasNegociacao):
                     hasOpcoesVencidasCheck = True
                     break
 
@@ -111,7 +111,7 @@ class CarteiraGrupoRegistros:
                 vencidaEm: datetime.datetime.date
                 grupo = copy.deepcopy(carteira[-1])
                 for registro in grupo.registros:
-                    if CarteiraGrupoRegistros.__hasOpcoesVencidas(registro, dataRef):
+                    if CarteiraGrupoRegistros.__hasOpcoesVencidas(registro, notaAtual, notasNegociacao):
                         if hasattr(registro, 'prazo'):
                             # opções vencidas
                             vencidaEm = Util.strToDate(registro.prazo)
@@ -176,6 +176,10 @@ class CarteiraGrupoRegistros:
             raise ValueError(f'Especificação de opção não esperada: {
                              especificacaoOpcao}')
 
+        # remove valor de strike da descrição de opções
+        if len(result) == 4:
+            del result[2]
+
         return ' '.join(result)
 
     @staticmethod
@@ -227,6 +231,22 @@ class CarteiraGrupoRegistros:
         return n.resumoFinanceiro.clearing.totalCBLC + n.resumoFinanceiro.bolsa.totalBovespaSoma + n.resumoFinanceiro.custosOperacionais.totalCustosDespesas
 
     @staticmethod
-    def __hasOpcoesVencidas(registro: CarteiraRegistro, dataRef: datetime.date) -> bool:
-        return (registro.tipoMercado in ['EXERC OPC COMPRA', 'EXERC OPC VENDA']) \
-            or (registro.tipoMercado in ['OPCAO DE COMPRA', 'OPCAO DE VENDA'] and registro.qnt != 0 and dataRef >= registro.prazo)
+    def __hasOpcoesVencidas(registro: CarteiraRegistro, notaAtual: NotaNegociacaoNegocioImpostos, notasNegociacao: list[NotaNegociacaoNegocioImpostos]) -> bool:
+        if registro.tipoMercado in ['EXERC OPC COMPRA', 'EXERC OPC VENDA']:
+            return True
+
+        dataRef = Util.strToDate(notaAtual.dataPregao)
+        if registro.tipoMercado in ['OPCAO DE COMPRA', 'OPCAO DE VENDA'] and registro.qnt != 0 and dataRef >= registro.prazo:
+            totalContratosAbertos = registro.qnt
+            for notaCheck in notasNegociacao:
+                if notaCheck.dataPregao == notaAtual.dataPregao:
+                    for registroCheck in notaCheck.negociosRealizados:
+                        if CarteiraGrupoRegistros.__getEspecificacaoNormalizada(registroCheck) == registro.descricao:
+                            totalContratosAbertos += registroCheck.quantidade
+
+            if totalContratosAbertos == 0:
+                return False
+            else:
+                return True
+
+        return False
