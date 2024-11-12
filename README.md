@@ -18,3 +18,9 @@ Consulte o texto no arquivo LICENSE para mais detalhes.
 - Instale o [VS Code](https://code.visualstudio.com/);
 - Instale a extensão [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) no VS Code;
 - No VS Code, execute o comando "Dev Containers: Open Folder in Container".
+
+# Emissão de DARF
+
+- Acesse: https://www.gov.br/pt-br/servicos/emitir-darf-para-pagamento-de-tributos-federais
+- Geração e Impressão do Darf > Preenchimento Rápido
+- Código da Receita: 6015
