@@ -84,6 +84,9 @@ class ImpostoMes:
             round(mesAtualSomaTributavelDayTradeVista, 2)}')
         print(f'{mesAtual}: Opções: R$ {round(mesAtualSomaTributavelOpcoes, 2)} Opções Day Trade: R$ {
             round(mesAtualSomaTributavelDayTradeOpcoes, 2)}')
+        print('[ACUMULADO]')
+        print(f'Normal: R$ {round(somaTributavel, 2)}')
+        print(f'Day Trade: R$ {round(somaTributavelDayTrade, 2)}')
         print('-'*10)
 
         return impostos
