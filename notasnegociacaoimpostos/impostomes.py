@@ -38,7 +38,7 @@ class ImpostoMes:
                         if somaTributavel > 0 or somaTributavelDayTrade > 0:
                             impostos.append(ImpostoMes.__getImpostoMes(
                                 mesAtual, somaTributavel, somaTributavelDayTrade))
-                            
+
                             if somaTributavel > 0:
                                 somaTributavel = 0
 
@@ -52,7 +52,8 @@ class ImpostoMes:
                               round(mesAtualSomaTributavelDayTradeOpcoes, 2)}')
                         print('[ACUMULADO]')
                         print(f'Normal: R$ {round(somaTributavel, 2)}')
-                        print(f'Day Trade: R$ {round(somaTributavelDayTrade, 2)}')
+                        print(
+                            f'Day Trade: R$ {round(somaTributavelDayTrade, 2)}')
                         print('-'*10)
 
                         mesAtualSomaTributavelVista = 0
@@ -71,7 +72,7 @@ class ImpostoMes:
                     else:
                         raise Exception(
                             f'tipoMercado não esperado: {r.tipoMercado}')
-                    
+
                 somaTributavel += r.resultadoTributavel
                 somaTributavelDayTrade += r.resultadoTributavelDayTrade
 
